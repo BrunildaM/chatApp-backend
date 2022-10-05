@@ -9,3 +9,32 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  email     String    @unique
+  username  String
+  password  String
+  sender    Message[] @relation("sender")
+  receiver  Message[] @relation("reciever")
+  Group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId   Int
+}
+
+model Group {
+  id       Int       @id @default(autoincrement())
+  messages Message[]
+  user     User[]
+}
+
+model Message {
+  id         Int    @id @default(autoincrement())
+  text       String
+  group      Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId    Int
+  sender     User   @relation("sender", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  senderId   Int    @unique
+  reciever   User   @relation("reciever", fields: [recieverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  recieverId Int
+}
