@@ -108,6 +108,36 @@ app.post("/groups", async (req, res) => {
   }
 });
 
+app.get("/groups", async (req, res) => {
+  try {
+    const allGroups = await prisma.group.findMany({
+      include: {
+        messages: {
+          include: {
+            sender: {
+              select: {
+                email: true,
+                username: true,
+              },
+            },
+            reciever: {
+              select: {
+                email: true,
+                username: true,
+              },
+            },
+          },
+        },
+        user:true
+      },
+    });
+    res.send(allGroups);
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({ error: error.message });
+  }
+});
+
 app.post("/sign-in", async (req, res) => {
   try {
     const email = req.body.email;
