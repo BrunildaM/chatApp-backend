@@ -12,7 +12,7 @@ app.use(express.json());
 
 const prisma = new PrismaClient();
 
-const port = 4000;
+const port = 4444;
 
 const SECRET = process.env.SECRET!;
 
@@ -92,26 +92,16 @@ app.post("/sign-up", async (req, res) => {
 
 app.post("/groups", async (req, res) => {
   try {
-    const user1 = await prisma.user.findUnique({
-      where: { email: req.body.user1 },
-    });
-    const user2 = await prisma.user.findUnique({
-      where: { email: req.body.user2 },
-    });
-
-    if (user1 && user2) {
-      const newgroup = await prisma.group.create({
-        data: {
-          user: {
-            create: [user1, user2],
-          },
-          messages: {
-            create: [],
-          },
+    const newgroup = await prisma.group.create({
+      data: {
+        user: {
+          connect: req.body.users.map((useremail: string) => ({
+            email: useremail,
+          })),
         },
-      })
-      res.send(newgroup);
-    }
+      },
+    });
+    res.send(newgroup);
   } catch (error) {
     //@ts-ignore
     res.status(400).send({ error: error.message });
