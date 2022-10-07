@@ -108,6 +108,39 @@ app.post("/groups", async (req, res) => {
   }
 });
 
+app.patch("/groups/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const newgroup = await prisma.group.update({
+      where: { id },
+      data: {
+        user: {
+          connect: req.body.users.map((useremail: string) => ({
+            email: useremail,
+          })),
+        },
+      },
+    });
+    res.send(newgroup);
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({ error: error.message });
+  }
+});
+
+app.delete("/groups/:id", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await prisma.group.delete({
+      where: { id },
+    });
+    res.send({ messaage: "Group deleted successfully" });
+  } catch (error) {
+    //@ts-ignore
+    res.status(400).send({ error: error.message });
+  }
+});
+
 app.get("/groups", async (req, res) => {
   try {
     const allGroups = await prisma.group.findMany({
@@ -128,7 +161,12 @@ app.get("/groups", async (req, res) => {
             },
           },
         },
-        user:true
+        user: {
+          select: {
+            email: true,
+            username: true,
+          },
+        },
       },
     });
     res.send(allGroups);
@@ -137,6 +175,7 @@ app.get("/groups", async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 });
+
 
 app.post("/sign-in", async (req, res) => {
   try {
