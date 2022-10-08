@@ -36,8 +36,7 @@ async function getCurrentUser(token = "") {
     const user = await prisma.user.findUnique({
       where: { id: (data as any).id },
       include: {
-        Group: {include: {messages: true}}
-        // groups: { include: { messages: true } },
+        groups: { include: { messages: true } },
       },
     });
     return user;
@@ -81,7 +80,6 @@ app.post("/sign-up", async (req, res) => {
       return res.status(400).send({ errors: ["Email already exists!"] });
     }
     const user = await prisma.user.create({
-      //ka nje gabim duhet rregulluar
       data: { email, username, password: hash(password) },
     });
     const token = generateToken(user.id);
@@ -92,6 +90,9 @@ app.post("/sign-up", async (req, res) => {
   }
 });
 
+
+
+//me del i gjithe kodi me errore, spo e ndryshoj qe ta shohim bashke
 app.post("/groups", async (req, res) => {
   try {
     const newgroup = await prisma.group.create({
