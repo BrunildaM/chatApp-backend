@@ -181,7 +181,6 @@ app.get("/groups", async (req, res) => {
 app.post("/sign-in", async (req, res) => {
   try {
     const email = req.body.email;
-    const username = req.body.username;
     const password = req.body.password;
 
     const errors: string[] = [];
@@ -189,11 +188,6 @@ app.post("/sign-in", async (req, res) => {
     if (typeof email !== "string") {
       errors.push("Email not provided or not a string");
     }
-
-    if (typeof username !== "string") {
-      errors.push("Username not provided or not a string");
-    }
-
     if (typeof password !== "string") {
       errors.push("Password not provided or not a string");
     }
