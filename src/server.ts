@@ -63,8 +63,8 @@ app.post("/sign-up", async (req, res) => {
       errors.push("Email not provided or not a string");
     }
 
-    if (typeof username !== "string") {
-      errors.push("Username not provided or not a string");
+    if (typeof fullname !== "string") {
+      errors.push("Fullname not provided or not a string");
     }
 
     if (typeof password !== "string") {
