@@ -11,30 +11,41 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  email     String    @unique
-  username  String
-  password  String
-  avatar    String?
-  sender    Message[] @relation("sender")
-  receiver  Message[] @relation("reciever")
-  groups    Group[]
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  email         String    @unique
+  // username  String
+  fullname      String
+  password      String
+  avatar        String?
+  publicAccount Boolean 
+  sender        Message[] @relation("sender")
+  // receiver  Message[] @relation("reciever")
+  groups        Group[]
 }
+
+//shto nje model te ri per friendship nese public eshte false
 
 model Group {
   id       Int       @id @default(autoincrement())
+  name     String
+  avatar   String?
+  public   Boolean
+  //role mund te jete adimin ose participant
+  role     String
+  // admins  User[]  @
   messages Message[]
   users    User[]
 }
 
 model Message {
-  id         Int    @id @default(autoincrement())
-  text       String
-  group      Group  @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  groupId    Int
-  sender     User   @relation("sender", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  senderId   Int    @unique
-  reciever   User   @relation("reciever", fields: [recieverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  recieverId Int
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  groupId   Int
+  sender    User     @relation("sender", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  senderId  Int      @unique
+  // reciever   User   @relation("reciever", fields: [recieverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // recieverId Int
 }

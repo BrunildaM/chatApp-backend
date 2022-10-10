@@ -53,7 +53,7 @@ app.get("/users", async (req, res) => {
 
 //Don't create two different accounts with the same email
 app.post("/sign-up", async (req, res) => {
-  const { email, username, password } = req.body;
+  const { email, username,fullname, publicAccount, password } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -80,7 +80,7 @@ app.post("/sign-up", async (req, res) => {
       return res.status(400).send({ errors: ["Email already exists!"] });
     }
     const user = await prisma.user.create({
-      data: { email, username, password: hash(password) },
+      data: { email, fullname, publicAccount, password: hash(password) },
     });
     const token = generateToken(user.id);
     res.send({ user, token });
@@ -91,17 +91,18 @@ app.post("/sign-up", async (req, res) => {
 });
 
 
-
-//me del i gjithe kodi me errore, spo e ndryshoj qe ta shohim bashke
 app.post("/groups", async (req, res) => {
   try {
     const newgroup = await prisma.group.create({
       data: {
-        user: {
+        users: {
           connect: req.body.users.map((useremail: string) => ({
             email: useremail,
           })),
         },
+        name: req.body.name,
+        public: req.body.public,
+        role: req.body.role
       },
     });
     res.send(newgroup);
@@ -117,11 +118,14 @@ app.patch("/groups/:id", async (req, res) => {
     const newgroup = await prisma.group.update({
       where: { id },
       data: {
-        user: {
+        users: {
           connect: req.body.users.map((useremail: string) => ({
             email: useremail,
           })),
         },
+        name: req.body.name,
+        public: req.body.public,
+        role: req.body.role
       },
     });
     res.send(newgroup);
@@ -153,21 +157,15 @@ app.get("/groups", async (req, res) => {
             sender: {
               select: {
                 email: true,
-                username: true,
-              },
-            },
-            reciever: {
-              select: {
-                email: true,
-                username: true,
+                fullname: true,
               },
             },
           },
         },
-        user: {
+        users: {
           select: {
             email: true,
-            username: true,
+            fullname: true,
           },
         },
       },
