@@ -53,7 +53,7 @@ app.get("/users", async (req, res) => {
 
 //Don't create two different accounts with the same email
 app.post("/sign-up", async (req, res) => {
-  const { email, username,fullname, publicAccount, password } = req.body;
+  const { email,fullname, avatar,publicAccount, password } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
