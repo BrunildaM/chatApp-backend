@@ -25,7 +25,12 @@ model User {
 }
 
 //shto nje model te ri per friendship nese public eshte false
+// model Friendship{
+//   friend1      1   1
+//   friend2      2   3
+//   status   friend  onholds  // nothing, send a request, recive a request
 
+// }
 model Group {
   id       Int       @id @default(autoincrement())
   name     String

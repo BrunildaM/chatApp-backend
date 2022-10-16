@@ -53,7 +53,7 @@ app.get("/users", async (req, res) => {
 
 //Don't create two different accounts with the same email
 app.post("/sign-up", async (req, res) => {
-  const { email, username,fullname, publicAccount, password } = req.body;
+  const { email,fullname, publicAccount,avatar, password } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -71,6 +71,7 @@ app.post("/sign-up", async (req, res) => {
       errors.push("Password not provided or not a string");
     }
 
+
     if (errors.length > 0) {
       res.status(400).send({ errors });
       return;
@@ -80,7 +81,7 @@ app.post("/sign-up", async (req, res) => {
       return res.status(400).send({ errors: ["Email already exists!"] });
     }
     const user = await prisma.user.create({
-      data: { email, fullname, publicAccount, password: hash(password) },
+      data: { email, fullname, publicAccount,avatar, password: hash(password) },
     });
     const token = generateToken(user.id);
     res.send({ user, token });
@@ -148,9 +149,32 @@ app.delete("/groups/:id", async (req, res) => {
   }
 });
 
+// get all groups where the current user is present
+app.get("/groups/:email",async(req,res)=>{
+  const userGroups=await prisma.user.findMany({
+    where:{email: req.params.email},
+    include:{groups:{include:{users:true,messages:true}}}
+  })
+  const groups=userGroups.map(group=>group.groups)
+  res.send(groups)
+  
+})
+
+// get all chats for the current user 
+app.get("/chats/:email",async(req,res)=>{
+  const userGroups=await prisma.user.findMany({
+    where:{email: req.params.email},
+    include:{groups:{include:{users:true,messages:true}}}
+  })
+  const groups=userGroups.map(group=>group.groups.filter(chat=>chat.messages.length>0))
+   res.send(groups)
+ 
+})
+
 app.get("/groups", async (req, res) => {
   try {
     const allGroups = await prisma.group.findMany({
+      
       include: {
         messages: {
           include: {
