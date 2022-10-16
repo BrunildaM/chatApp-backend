@@ -53,7 +53,7 @@ app.get("/users", async (req, res) => {
 
 //Don't create two different accounts with the same email
 app.post("/sign-up", async (req, res) => {
-  const { email,fullname, publicAccount,avatar, password } = req.body;
+  const { email, username,fullname, publicAccount, password } = req.body;
   try {
     const existingUser = await prisma.user.findUnique({ where: { email } });
 
@@ -91,7 +91,6 @@ app.post("/sign-up", async (req, res) => {
   }
 });
 
-
 app.post("/groups", async (req, res) => {
   try {
     const newgroup = await prisma.group.create({
@@ -103,7 +102,7 @@ app.post("/groups", async (req, res) => {
         },
         name: req.body.name,
         public: req.body.public,
-        role: req.body.role
+        role: req.body.role,
       },
     });
     res.send(newgroup);
@@ -124,9 +123,9 @@ app.patch("/groups/:id", async (req, res) => {
             email: useremail,
           })),
         },
-        name: req.body.name,
+        // name: req.body.name,
         public: req.body.public,
-        role: req.body.role
+        role: req.body.role,
       },
     });
     res.send(newgroup);
@@ -200,7 +199,6 @@ app.get("/groups", async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 });
-
 
 app.post("/sign-in", async (req, res) => {
   try {
