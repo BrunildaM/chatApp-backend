@@ -211,7 +211,8 @@ app.get("/chats/:email", async (req, res) => {
          else 
             res.send({message: "You don't have any chat yet..."})
         
-    } catch (error) { // @ts-ignore
+    } catch (error) {
+       // @ts-ignore
         res.status(400).send({error: error.message});
     }
 
